@@ -28,7 +28,7 @@ public class AccountService {
         try {
             user = userDB.getUser(username);
             
-            if (user.getPassword().equals(password)) {
+            if (user != null && user.getPassword().equals(password)) {
                 // successful login
                 Logger.getLogger(AccountService.class.getName())
                         .log(Level.INFO,
@@ -56,6 +56,7 @@ public class AccountService {
                 
                 return user;
             }
+            
             
         } catch (NotesDBException ex) {
         }

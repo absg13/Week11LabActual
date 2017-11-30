@@ -22,13 +22,30 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        HttpSession session = request.getSession();
+        
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+        
+        String forgotpassword = request.getParameter("forgotpassword");
+        
+        if (forgotpassword != null) {
+            getServletContext().getRequestDispatcher("/WEB-INF/forgot.jsp").forward(request, response);
+            return;
+        }
+        
+        // validate
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
+            request.setAttribute("message", "Invalid.  Please try again.");
+            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
+            return;
+        }
+        
         if (request.getParameter("logout") != null) {
-            HttpSession session = request.getSession();
             session.invalidate();
             request.setAttribute("errormessage", "logged out");
         }
-        
-        
+
         getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
     }
 
@@ -43,6 +60,7 @@ public class LoginServlet extends HttpServlet {
         if (username.isEmpty() || password.isEmpty()) {
             request.setAttribute("errormessager", "fill in both fields, please");
             getServletContext().getRequestDispatcher("/WEB-INF/login.jsp/").forward(request, response);
+            return;
         }
         
         AccountService as = new AccountService();
@@ -54,8 +72,8 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("username", username);
             response.sendRedirect("home");
         } else {
-            request.setAttribute("errormessager", "invalid login");
-            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp/").forward(request, response);
+            request.setAttribute("errormessage", "invalid login");
+            getServletContext().getRequestDispatcher("/WEB-INF/login.jsp").forward(request, response);
         }
     }
 }
